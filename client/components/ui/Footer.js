@@ -11,7 +11,7 @@ const Divider = styled.hr`
   border-color: ${DARK_COLOR};
   color: ${DARK_COLOR};
   background-color: ${DARK_COLOR};
-  opacity: 0.025;
+  opacity: 0.05;
 `;
 
 const Footer = () => (

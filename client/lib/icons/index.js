@@ -3,6 +3,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faBolt as faBoltSolid,
   faHeart as faHeartSolid,
+  faUserFriends as faUserFriendsSolid,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -23,4 +24,5 @@ library.add(
   faHeartSolid,
   faCalendarRegular,
   faTwitter,
+  faUserFriendsSolid,
 );

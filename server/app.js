@@ -12,6 +12,8 @@ import {
 import Router from './routes';
 import config from './config';
 import { apolloServer } from './middleware/graphql';
+import { attachLoggerToContext } from './middleware/logger';
+import initializeDatabase from './db';
 
 const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV !== 'production';
 
@@ -22,15 +24,15 @@ const initializeNext = () => nextApp.prepare()
     const app = new Koa();
 
     app.on('error', (error) => {
-      log.error('App Level Error:', { error });
+      log.log('error', { message: 'App Level Error:', error: error.message });
     });
 
     process.on('uncaughtException', (error) => {
-      log.error('Unhandled Exception:', { error });
+      log.log('error', { message: 'Unhandled Exception:', error: error.message });
     });
 
     process.on('unhandledRejection', (error) => {
-      log.error('Unhandled Promise Rejection:', { error });
+      log.log('error', { message: 'Unhandled Promise Rejection:', error: error.message });
     });
 
     /**
@@ -40,6 +42,7 @@ const initializeNext = () => nextApp.prepare()
     app.use(securityPolicy());
     app.use(compress());
     app.use(logger());
+    app.use(attachLoggerToContext());
     app.use(graphql(app));
 
     /**
@@ -99,4 +102,5 @@ if (cluster.isMaster && !isDevelopment) {
 else {
   log.info(`Worker ${process.pid} started`);
   initializeNext();
+  initializeDatabase();
 }
