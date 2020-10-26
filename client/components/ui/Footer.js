@@ -1,22 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Flex, Box, Text } from '.';
-import { DARK_COLOR, WHITE } from '../utils/theme';
+import { DARK_COLOR, DARK_COLOR_TRANSPARENT, WHITE } from '../utils/theme';
 
 const FooterContainer = styled.footer`
   width: 100%;
-`;
-
-const Divider = styled.hr`
-  border-color: ${DARK_COLOR};
-  color: ${DARK_COLOR};
-  background-color: ${DARK_COLOR};
-  opacity: 0.05;
+  border-top: 1px solid ${DARK_COLOR_TRANSPARENT};
 `;
 
 const Footer = () => (
   <FooterContainer>
-    <Divider />
     <Flex
       px={3}
       justify="space-between"
@@ -26,7 +19,7 @@ const Footer = () => (
     >
       <Box>
         <Text color={DARK_COLOR}>
-          Copyright © {(new Date().getFullYear())}
+          Copyright © {(new Date().getFullYear())} - Created by William Germany
         </Text>
       </Box>
     </Flex>

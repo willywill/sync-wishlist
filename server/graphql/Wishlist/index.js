@@ -1,4 +1,6 @@
+/* eslint-disable no-underscore-dangle */
 import { gql } from 'apollo-server-koa';
+import isEqual from 'lodash/fp/isEqual';
 import WishlistService from '../../services/WishlistService';
 
 const Wishlist = gql`
@@ -6,9 +8,11 @@ const Wishlist = gql`
     "ID of the wishlist - this is used in generating a url to manage the wishlist"
     id: String!
     "Name of the wishlist"
-    name: String # FIXME: Make this required
+    name: String!
     "All of the items associated with this wishlist"
     items: [WishlistItem!]!
+    "Can the current user manage this wishlist?"
+    canManage: Boolean!
   }
 
   type WishlistItem {
@@ -27,8 +31,14 @@ const Wishlist = gql`
   }
 
   type WishlistParticipant {
+    "ID of the participant"
+    id: String!
     "Name of the participant for this wishlist item"
     name: String!
+  }
+
+  type WishlistPayload {
+    wishlist: Wishlist!
   }
 
   input AddWishlistItemInput {
@@ -52,6 +62,8 @@ const Wishlist = gql`
   }
 
   input PaticpateInWishlistItemInput {
+    "ID of the the wishlist"
+    wishlistId: String!
     "ID of the item in the wishlist"
     wishlistItemId: String!
     "Name of the participant for this wishlist"
@@ -60,33 +72,46 @@ const Wishlist = gql`
 
   extend type Query {
     "Get a specific wishlist"
-    wishlist(id: String!): Wishlist
+    wishlist(id: String!, privateKey: String): Wishlist
   }
 
   extend type Mutation {
     "Creates a wishlist and sends a url to manage the wishlist to the user's email"
-    createWishlist(email: String!): Wishlist!
+    createWishlist(name: String!, email: String!): WishlistPayload!
     "Add an item to a specific wishlist"
-    addWishlistItem(input: AddWishlistItemInput!): Wishlist!
-    ""
-    removeWishlistItem(input: RemoveWishlistItemInput): Wishlist!
+    addWishlistItem(input: AddWishlistItemInput!): WishlistPayload!
+    "Remove a specific wishlist item"
+    removeWishlistItem(input: RemoveWishlistItemInput): WishlistPayload!
     "Claiming some level of responsibility for making this wishlist item a reality"
-    particpateInWishlistItem(input: PaticpateInWishlistItemInput!): WishlistItem!
+    particpateInWishlistItem(input: PaticpateInWishlistItemInput!): WishlistPayload!
   }
 `;
 
 export const resolver = {
   Wishlist: {
     id: wishlist => wishlist.id,
+    name: wishlist => wishlist.name,
     items: wishlist => wishlist.items,
+    canManage: wishlist => wishlist.canManage || false,
   },
   Query: {
-    wishlist: (parent, args, ctx) => WishlistService(ctx).getWishlist(args.id),
+    wishlist: (parent, args, ctx) => WishlistService(ctx).getWishlist(args.id)
+      .then(wishlist => ({
+        id: wishlist.id,
+        name: wishlist.name,
+        items: wishlist.items,
+        canManage: isEqual(args.privateKey, wishlist.manageKey),
+      })),
   },
   Mutation: {
-    createWishlist: (parent, args, ctx) => WishlistService(ctx).createWishlist(args.email),
-    addWishlistItem: (parent, args, ctx) => WishlistService(ctx).addWishlistItem(args.input),
-    removeWishlistItem: (parent, args, ctx) => WishlistService(ctx).removeWishlistItem(args.input),
+    createWishlist: (parent, args, ctx) => WishlistService(ctx).createWishlist(args)
+      .then(wishlist => ({ wishlist })),
+    addWishlistItem: (parent, args, ctx) => WishlistService(ctx).addWishlistItem(args.input)
+      .then(wishlist => ({ wishlist })),
+    removeWishlistItem: (parent, args, ctx) => WishlistService(ctx).removeWishlistItem(args.input)
+      .then(wishlist => ({ wishlist })),
+    particpateInWishlistItem: (parent, args, ctx) => WishlistService(ctx).participateInWishlistItem(args.input)
+      .then(wishlist => ({ wishlist })),
   },
 };
 

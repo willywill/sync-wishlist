@@ -1,217 +1,80 @@
-/* global window */
 import React from 'react';
-import gql from 'graphql-tag';
-import isEmpty from 'lodash/fp/isEmpty';
-import size from 'lodash/fp/size';
-import { useQuery } from 'react-apollo';
+import Router from 'next/router';
 import styled from 'styled-components';
-import { Flex, Box, Text, Icon } from '../components/ui';
+import { Flex, Box, Text } from '../components/ui';
 import Layout from '../components/ui/Layout';
-import textMixin from '../components/utils/text';
-import {
-  DANGER_COLOR,
-  DARK_COLOR, INFO_COLOR, LIGHT_COLOR, PRIMARY_FONT, SECONDARY_FONT, shiftHSL, WARNING_COLOR, WHITE,
-} from '../components/utils/theme';
-
-const WISHLIST_ID = 'F-NqZ5v4';
-
-const Heading = styled.h1`
-  ${textMixin};
-`;
+import { DARK_COLOR } from '../components/utils/theme';
+import Button from '../components/ui/Button';
 
 const Divider = styled.hr`
+  width: 100%;
   border-color: ${DARK_COLOR};
   color: ${DARK_COLOR};
   background-color: ${DARK_COLOR};
   opacity: 0.05;
 `;
 
-const BadgeButton = styled.button`
-  display: inline;
-  width: fit-content;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  border: 0;
-  font-family: ${PRIMARY_FONT};
-  font-size: 14px;
-  border-radius: 5px;
-  background-color: ${props => props.color || INFO_COLOR};
-  color: ${WHITE};
-  padding: 4px 8px;
-  cursor: pointer;
-  will-change: background-color;
-  transition: background-color 50ms ease-in-out;
-
-  &:focus {
-    outline: none;
-  }
-
-  &:hover {
-    background-color: ${props => shiftHSL({ lightness: -7 }, props.color || INFO_COLOR)}
-  }
-
-  &:active {
-    background-color: ${props => shiftHSL({ lightness: -15 }, props.color || INFO_COLOR)}
+const CollapsingFlex = styled(Flex)`
+  overflow: hidden;
+  @media only screen and (max-width: 700px) {
+    flex-direction: column;
   }
 `;
 
-const TextInput = styled.input`
-  border-radius: 5px;
-  border: 1px solid ${DARK_COLOR};
-  padding: 8px;
-  margin-bottom: 10px;
-  font-family: ${SECONDARY_FONT};
-  font-size: 14px;
-`;
+const Blob = () => (
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    {/* eslint-disable-next-line max-len */}
+    <path fill="#0F62FE" d="M34.4,-32.4C49.1,-19.8,68.5,-9.9,74,5.5C79.5,20.9,71.1,41.8,56.5,56.7C41.8,71.5,20.9,80.3,2,78.3C-16.9,76.4,-33.9,63.6,-42.7,48.7C-51.5,33.9,-52.3,16.9,-54.5,-2.2C-56.7,-21.4,-60.4,-42.8,-51.6,-55.4C-42.8,-68,-21.4,-71.8,-5.8,-66.1C9.9,-60.3,19.8,-45,34.4,-32.4Z" transform="translate(100 100)" />
+  </svg>
+);
 
-const TextArea = styled.textarea`
-  border-radius: 5px;
-  border: 1px solid ${DARK_COLOR};
-  padding: 8px;
-  margin-bottom: 10px;
-  font-family: ${SECONDARY_FONT};
-  font-size: 14px;
-`;
-
-const getWishlistQuery = gql`
-  query getWishlist {
-    wishlist(id: "${WISHLIST_ID}") {
-      id
-      items {
-        id
-        name
-        description
-        url
-        photoUrl
-      }
-    }
-  }
-`;
-
-const buildParticipantsList = participants => {
-  if (size(participants) === 1) {
-    return participants[0].name;
-  }
-
-  if (size(participants) === 2) {
-    return `${participants[0].name} and ${participants[1].name}`;
-  }
-
-  const [firstParticipant, secondParticipant, ...remainingParticipants] = participants;
-
-  return `${firstParticipant.name}, ${secondParticipant.name} and ${size(remainingParticipants)} others`;
-};
-
-const AddItemForm = () =>
-  (
-    <Flex column>
-      <Text bold>
-        {'Name'}
-      </Text>
-      <TextInput placeholder="Name of the item - e.g. Jean Jacket" />
-      <Text bold>
-        {'Url'}
-      </Text>
-      <TextInput placeholder="Url for others (or yourself) to obtain this item" />
-      <Text bold>
-        {'Photo Url'}
-      </Text>
-      <TextInput placeholder="URL of a picture associated with this item" />
-      <Text bold>
-        {'Description'}
-      </Text>
-      <TextArea placeholder="A cool, clear and not-so-concise way of describing this item" />
-      <Flex justifyContent="flex-end">
-        <Box mr={1}>
-          <BadgeButton color={LIGHT_COLOR}>{'Cancel'}</BadgeButton>
-        </Box>
-        <BadgeButton>{'Add Item'}</BadgeButton>
-      </Flex>
-    </Flex>
-  );
-
-const ItemImage = ({ photoUrl }) => {
-  if (!photoUrl) {
-    return <div style={{ width: '100px', height: '90%', backgroundColor: '#f4f4f4', borderRadius: '10px' }} />;
-  }
-
-  return (
-    <Box maxWidth="100px">
-      <img
-        style={{ borderRadius: '10px', maxWidth: '100%', maxHeight: '100%' }}
-        width="auto"
-        height="auto"
-        src={photoUrl}
-      />
-    </Box>
-  );
-};
-
-const Test = () => {
-  const { data = {}, loading } = useQuery(getWishlistQuery);
-
-  return <AddItemForm />;
-
-  const items = (data && data.wishlist && data.wishlist.items) || [];
-
-  if (isEmpty(items) && !loading) {
-    return (
-      <Flex height="100%" alignItems="center" justifyContent="center" column>
-        <Text>
-          {'Looks like you don\'t have any items in your wishlist 😞 Start by adding some below.'}
-        </Text>
-        <BadgeButton>+ Add Item</BadgeButton>
-      </Flex>
-    );
-  }
-
-  return (
-    <Flex column>
-      {items.map(item => (
-        <Flex height="100px" key={item.id} p={1}>
-          <ItemImage photoUrl={item.photoUrl} />
-          <Flex width="80%" ml={2} my={1} column>
-            <Text medium>
-              {item.name}
-            </Text>
-            <Text lighter>
-              {item.description}
-            </Text>
-            <Flex alignItems="center">
-              {item.url && (
-                <BadgeButton onClick={() => window.open(item.url)}>
-                  {'Product Link'}
-                </BadgeButton>
-              )}
-              {item.participants && (
-                <Flex alignItems="center" ml={3}>
-                  <Box mr={2}>
-                    <Icon icon="user-friends" color={DARK_COLOR} />
-                  </Box>
-                  <Text secondary small>{buildParticipantsList(item.participants)}</Text>
-                </Flex>
-              )}
-            </Flex>
-          </Flex>
-        </Flex>
-      ))}
-    </Flex>
-  );
-};
-
-const Home = () => (
-  <Layout>
+const HomePage = () => (
+  <Layout navbar={false}>
     <Flex pt={2} width="100%" height="100%" justify="flex-start" column>
-      <Box mx={4} mt={4}>
-        <Heading bold color={DARK_COLOR}>Wishlist</Heading>
-        <Box ml={1}>
-          <Text lighter>ID: {WISHLIST_ID}</Text>
-        </Box>
+      <Flex pt={2} px={4} justifyContent="space-between" alignItems="center">
+        <Text medium>
+          {'Wishlist Sync'}
+        </Text>
+        <Button>
+          {'Get Started'}
+        </Button>
+      </Flex>
+      <Flex width={1}>
         <Divider />
-        <Test />
-      </Box>
+      </Flex>
+      <CollapsingFlex height="100%" alignItems="center" justifyContent="center">
+        <Flex pl={4} mr="50px" column>
+          <Text large bold>
+            {'Create Synchronized Wishlists'}
+          </Text>
+          <Text medium>
+            {'No User Accounts Required'}
+          </Text>
+          <Box mt={2}>
+            <Button onClick={() => Router.push('/create')}>
+              {'Create Wishlist'}
+            </Button>
+          </Box>
+        </Flex>
+        <Flex mt={4} column style={{ position: 'relative' }}>
+          <Box px={4} width={1}>
+            <img
+              width="100%"
+              height="auto"
+              style={{ maxWidth: '375px', minWidth: '300px' }}
+              src="/graphic.svg"
+              alt="Brand Logo"
+            />
+            <Box width="400px" style={{ position: 'absolute', top: '190px', left: '-255px' }}>
+              <Blob />
+            </Box>
+          </Box>
+        </Flex>
+      </CollapsingFlex>
     </Flex>
   </Layout>
 );
 
-export default Home;
+HomePage.displayName = 'HomePage';
+
+export default HomePage;

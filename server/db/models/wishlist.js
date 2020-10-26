@@ -5,10 +5,10 @@ const schemaOptions = {
 };
 
 const schema = {
-  id: { type: String, required: true },
+  name: { type: String, required: true },
+  manageKey: { type: String, required: true },
   items: [
     {
-      id: { type: String, required: true },
       name: { type: String, required: true },
       description: { type: String, required: false },
       url: { type: String, required: false },

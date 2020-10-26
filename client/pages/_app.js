@@ -26,7 +26,7 @@ class CustomApp extends App {
     return (
       <React.Fragment>
         <Head>
-          <title>Title</title>
+          <title>Wishlist Sync</title>
         </Head>
         <ApolloProvider client={apolloClient}>
           <Component {...pageProps} />

@@ -18,7 +18,7 @@ const normalizeCss = css`
   * Remove the margin in all browsers.
   */
   body {
-    margin: 0;
+    margin: 0 !important;
   }
   /**
   * Render the main element consistently in IE.

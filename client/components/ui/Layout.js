@@ -1,5 +1,5 @@
 import React from 'react';
-import { node, string } from 'prop-types';
+import { bool, node, string } from 'prop-types';
 import styled from 'styled-components';
 import Page from './Page';
 import Navbar from './Navbar';
@@ -14,7 +14,7 @@ const PageContainer = styled(Flex)`
 const Layout = props => (
   <Page height="100%" background={props.background}>
     <PageContainer justifyContent="space-between" alignItems="center" column>
-      <Navbar />
+      {props.navbar && <Navbar />}
       {props.children}
       <Footer />
     </PageContainer>
@@ -22,11 +22,13 @@ const Layout = props => (
 );
 
 Layout.propTypes = {
+  navbar: bool,
   background: string,
   children: node.isRequired,
 };
 
 Layout.defaultProps = {
+  navbar: true,
   background: undefined,
 };
 

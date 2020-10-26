@@ -14,6 +14,7 @@ export const WARNING_COLOR = 'hsl(40, 73%, 58%)';
 export const INFO_COLOR = 'hsl(215, 71%, 51%)';
 export const LIGHT_COLOR = 'hsl(198, 17%, 70%)';
 export const DARK_COLOR = 'hsl(230, 27%, 17%)';
+export const DARK_COLOR_TRANSPARENT = 'hsla(230, 27%, 17%, 0.05)';
 export const WHITE = 'hsl(0, 0%, 100%)';
 
 /**
