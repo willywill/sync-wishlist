@@ -26,6 +26,8 @@ const Wishlist = gql`
     url: String
     "Photo url of the item in the wishlist"
     photoUrl: String
+    "Price estimation of the item"
+    price: String
     "List of participants for this wishlist item"
     participants: [WishlistParticipant!]!
   }
@@ -52,6 +54,25 @@ const Wishlist = gql`
     url: String
     "Photo url of the item in the wishlist"
     photoUrl: String
+    "Price estimation of the item in the wishlist"
+    price: String
+  }
+
+  input EditWishlistItemInput {
+    "ID of the the wishlist"
+    wishlistId: String!
+    "ID of the item in the wishlist"
+    wishlistItemId: String!
+    "Name of the item in the wishlist"
+    name: String
+    "Description of the item in the wishlist"
+    description: String
+    "Url of the item in the wishlist"
+    url: String
+    "Photo url of the item in the wishlist"
+    photoUrl: String
+    "Price estimation of the item in the wishlist"
+    price: String
   }
 
   input RemoveWishlistItemInput {
@@ -84,6 +105,8 @@ const Wishlist = gql`
     removeWishlistItem(input: RemoveWishlistItemInput): WishlistPayload!
     "Claiming some level of responsibility for making this wishlist item a reality"
     particpateInWishlistItem(input: PaticpateInWishlistItemInput!): WishlistPayload!
+    "Edit a specific wishlist item"
+    editWishlistItem(input: EditWishlistItemInput!): WishlistPayload!
   }
 `;
 
@@ -109,6 +132,8 @@ export const resolver = {
     addWishlistItem: (parent, args, ctx) => WishlistService(ctx).addWishlistItem(args.input)
       .then(wishlist => ({ wishlist })),
     removeWishlistItem: (parent, args, ctx) => WishlistService(ctx).removeWishlistItem(args.input)
+      .then(wishlist => ({ wishlist })),
+    editWishlistItem: (parent, args, ctx) => WishlistService(ctx).editWishlistItem(args.input)
       .then(wishlist => ({ wishlist })),
     particpateInWishlistItem: (parent, args, ctx) => WishlistService(ctx).participateInWishlistItem(args.input)
       .then(wishlist => ({ wishlist })),

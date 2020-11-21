@@ -12,7 +12,7 @@ const PageContainer = styled(Flex)`
 `;
 
 const Layout = props => (
-  <Page height="100%" background={props.background}>
+  <Page height="100vh" background={props.background}>
     <PageContainer justifyContent="space-between" alignItems="center" column>
       {props.navbar && <Navbar />}
       {props.children}

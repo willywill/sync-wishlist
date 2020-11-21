@@ -4,6 +4,9 @@ import {
   faUserFriends as faUserFriendsSolid,
   faCheckCircle as faCheckCircleSolid,
   faTrash as faTrashSolid,
+  faEdit as faEditSolid,
+  faExternalLinkSquareAlt as faExternalLinkSquareAltSolid,
+  faCopy as faCopySolid,
 } from '@fortawesome/free-solid-svg-icons';
 
 // import {
@@ -21,4 +24,7 @@ library.add(
   faUserFriendsSolid,
   faCheckCircleSolid,
   faTrashSolid,
+  faEditSolid,
+  faCopySolid,
+  faExternalLinkSquareAltSolid,
 );

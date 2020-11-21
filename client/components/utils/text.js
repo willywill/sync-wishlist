@@ -19,7 +19,7 @@ const getTextColor = ({ white, lighter, color }) => {
   if (lighter) {
     return LIGHT_COLOR;
   }
-  return '';
+  return '#55626d';
 };
 
 const getTextTransform = ({ uppercase, capitalize }) => {

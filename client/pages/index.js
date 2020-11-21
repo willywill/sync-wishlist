@@ -3,16 +3,8 @@ import Router from 'next/router';
 import styled from 'styled-components';
 import { Flex, Box, Text } from '../components/ui';
 import Layout from '../components/ui/Layout';
-import { DARK_COLOR } from '../components/utils/theme';
 import Button from '../components/ui/Button';
-
-const Divider = styled.hr`
-  width: 100%;
-  border-color: ${DARK_COLOR};
-  color: ${DARK_COLOR};
-  background-color: ${DARK_COLOR};
-  opacity: 0.05;
-`;
+import Divider from '../components/ui/Divider';
 
 const CollapsingFlex = styled(Flex)`
   overflow: hidden;
@@ -29,18 +21,10 @@ const Blob = () => (
 );
 
 const HomePage = () => (
-  <Layout navbar={false}>
+  <Layout navbar>
     <Flex pt={2} width="100%" height="100%" justify="flex-start" column>
-      <Flex pt={2} px={4} justifyContent="space-between" alignItems="center">
-        <Text medium>
-          {'Wishlist Sync'}
-        </Text>
-        <Button>
-          {'Get Started'}
-        </Button>
-      </Flex>
       <Flex width={1}>
-        <Divider />
+        <Divider/>
       </Flex>
       <CollapsingFlex height="100%" alignItems="center" justifyContent="center">
         <Flex pl={4} mr="50px" column>
@@ -48,7 +32,7 @@ const HomePage = () => (
             {'Create Synchronized Wishlists'}
           </Text>
           <Text medium>
-            {'No User Accounts Required'}
+            {'No User Accounts Required (Early Alpha)'}
           </Text>
           <Box mt={2}>
             <Button onClick={() => Router.push('/create')}>

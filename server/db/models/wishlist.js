@@ -13,6 +13,7 @@ const schema = {
       description: { type: String, required: false },
       url: { type: String, required: false },
       photoUrl: { type: String, required: false },
+      price: { type: String, required: false },
       participants: [
         {
           name: { type: String, required: false },

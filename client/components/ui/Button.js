@@ -10,6 +10,7 @@ const Button = styled.button`
   font-family: ${PRIMARY_FONT};
   font-size: ${props => (props.small ? '14px' : '18px')};
   border-radius: 5px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   background-color: ${props => props.color || INFO_COLOR};
   color: ${WHITE};
   padding: ${props => (props.small ? '4px 8px' : '8px 10px')};

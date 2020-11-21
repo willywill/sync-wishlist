@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { func, string } from 'prop-types';
+import { arrayOf, func, shape, string } from 'prop-types';
 import React from 'react';
 import { useMutation } from 'react-apollo';
 import { useForm } from 'react-hook-form';
@@ -8,9 +8,9 @@ import {
 } from '../../ui';
 import { DANGER_COLOR, LIGHT_COLOR } from '../../utils/theme';
 
-const addWishlistItemMutation = gql`
-  mutation addWishlistItem($input: AddWishlistItemInput!) {
-    addWishlistItem(input: $input) {
+const editWishlistItemMutation = gql`
+  mutation editWishlistItem($input: EditWishlistItemInput!) {
+    editWishlistItem(input: $input) {
       wishlist {
         id
         items {
@@ -26,14 +26,23 @@ const addWishlistItemMutation = gql`
   }
 `;
 
-const WishlistAddItemForm = ({ wishlistId, onCancel, onSuccess }) => {
-  const { handleSubmit, register, errors } = useForm();
-  const [addWishlistItem, { loading: submitting, error }] = useMutation(addWishlistItemMutation);
+const WishlistEditItemForm = ({ wishlistId, item, onCancel, onSuccess }) => {
+  const { handleSubmit, register, errors } = useForm({
+    defaultValues: {
+      itemName: item.name,
+      description: item.description,
+      url: item.url,
+      price: item.price,
+      photoUrl: item.photoUrl,
+    },
+  });
+  const [editWishlistItem, { loading: submitting, error }] = useMutation(editWishlistItemMutation);
 
-  const handleClick = (data) => addWishlistItem({
+  const handleClick = (data) => editWishlistItem({
     variables: {
       input: {
         wishlistId,
+        wishlistItemId: item.id,
         name: data.itemName,
         description: data.description,
         url: data.url,
@@ -90,7 +99,7 @@ const WishlistAddItemForm = ({ wishlistId, onCancel, onSuccess }) => {
           </Box>
           <Box style={{ minWidth: '100px' }}>
             <Button onClick={handleSubmit(handleClick)} disabled={submitting}>
-              {submitting ? 'Adding...' : 'Add Item'}
+              {submitting ? 'Updating...' : 'Update Item'}
             </Button>
           </Box>
         </Flex>
@@ -99,12 +108,24 @@ const WishlistAddItemForm = ({ wishlistId, onCancel, onSuccess }) => {
   );
 };
 
-WishlistAddItemForm.displayName = 'WishlistAddItemForm';
+WishlistEditItemForm.displayName = 'WishlistEditItemForm';
 
-WishlistAddItemForm.propTypes = {
+WishlistEditItemForm.propTypes = {
   onCancel: func.isRequired,
   onSuccess: func.isRequired,
   wishlistId: string.isRequired,
+  item: shape({
+    id: string.isRequired,
+    name: string.isRequired,
+    description: string,
+    url: string,
+    photoUrl: string,
+    price: string,
+    participants: arrayOf(shape({
+      id: string.isRequired,
+      name: string.isRequired,
+    })),
+  }).isRequired,
 };
 
-export default WishlistAddItemForm;
+export default WishlistEditItemForm;

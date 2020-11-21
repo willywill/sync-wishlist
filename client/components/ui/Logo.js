@@ -1,10 +1,8 @@
 import React from 'react';
 import { bool } from 'prop-types';
 
-const Logo = ({ banner }) => {
-  const logoSrc = banner
-    ? '/LogoBanner.svg'
-    : '/Logo.svg';
+const Logo = () => {
+  const logoSrc = '/logo-blue.png';
 
   return (
     <img

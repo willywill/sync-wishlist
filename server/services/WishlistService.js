@@ -48,6 +48,17 @@ const WishlistService = (
 
     const itemFiedlsWithValues = omitUndefined(wishlistItemFields);
 
+    await wishlistCommand.insertWishlistItem(wishlistId, itemFiedlsWithValues);
+    const wishlist = await getWishlist(wishlistId);
+
+    return wishlist;
+  };
+
+  const editWishlistItem = async (wishlistItem) => {
+    const { wishlistId, ...wishlistItemFields } = wishlistItem;
+
+    const itemFiedlsWithValues = omitUndefined(wishlistItemFields);
+
     await wishlistCommand.updateWishlistItem(wishlistId, itemFiedlsWithValues);
     const wishlist = await getWishlist(wishlistId);
 
@@ -72,6 +83,7 @@ const WishlistService = (
     getWishlist,
     createWishlist,
     addWishlistItem,
+    editWishlistItem,
     removeWishlistItem,
     participateInWishlistItem,
   };

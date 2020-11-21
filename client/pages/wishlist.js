@@ -4,10 +4,10 @@ import { useRouter } from 'next/router';
 import { useQuery } from 'react-apollo';
 import gql from 'graphql-tag';
 import Layout from '../components/ui/Layout';
-import { Box, Flex, Text } from '../components/ui';
-import { DARK_COLOR } from '../components/utils/theme';
+import { Flex } from '../components/ui';
 import Divider from '../components/ui/Divider';
 import WishlistItemsView from '../components/composite/Wishlist/WishlistItemsView';
+import WishlistManageSidebar from '../components/composite/Wishlist/WishlistManageSidebar';
 
 const getWishlistQuery = gql`
   query getWishlist($id: String!, $privateKey: String) {
@@ -21,6 +21,7 @@ const getWishlistQuery = gql`
         description
         url
         photoUrl
+        price
         participants {
           id
           name
@@ -42,36 +43,34 @@ const WishlistPage = () => {
   const canManage = getOr(false, 'canManage', wishlist);
 
   return (
-    <Layout navbar={canManage}>
+    <Layout navbar={true}>
       <Flex
         width={1}
         pt={2}
         px={4}
         justifyContent="flex-start"
         alignItems="center"
-        onClick={() => router.push('/')}
         style={{ cursor: 'pointer' }}
       >
-        <Text medium>
-          {'Wishlist Sync'}
-        </Text>
       </Flex>
       <Flex width={1}>
         <Divider />
       </Flex>
-      <Flex pt={2} width="100%" height="100%" justify="flex-start" column>
-        <Box mx={4} height="75%">
-          <Text large bold color={DARK_COLOR}>{wishlist.name ? `${wishlist.name}` : 'Wishlist'}</Text>
-          <Box ml={1}>
-            <Text lighter>{'ID:'} {wishlist.id}</Text>
-          </Box>
+      <Flex width="100%" height="90%" justify="flex-start">
+        {canManage && (
+          <Flex width="25%" column>
+            <WishlistManageSidebar wishlist={wishlist} />
+          </Flex>
+        )}
+        <Flex width={canManage ? '75%' : '100%'}>
           <WishlistItemsView
+            wishlistName={wishlist.name}
             wishlistId={wishlist.id}
             items={wishlist.items}
             canManage={canManage}
             refetch={refetch}
           />
-        </Box>
+        </Flex>
       </Flex>
     </Layout>
   );

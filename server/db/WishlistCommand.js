@@ -15,9 +15,20 @@ const WishlistCommand = (
     manageKey,
   });
 
-  const updateWishlistItem = (id, item) => db.updateOne(
+  const insertWishlistItem = (id, item) => db.updateOne(
     { _id: id },
     { $addToSet: { items: item } },
+  );
+
+  const updateWishlistItem = (id, item) => db.updateOne(
+    { _id: id, 'items._id': item.wishlistItemId },
+    { $set: {
+      'items.$.name': item.name,
+      'items.$.url': item.url,
+      'items.$.price': item.price,
+      'items.$.photoUrl': item.photoUrl,
+      'items.$.description': item.description,
+    } },
   );
 
   const updateWishlistParticpant = (id, itemId, participantName) => db.updateOne(
@@ -37,6 +48,7 @@ const WishlistCommand = (
   return {
     findWishlist,
     insertWishlist,
+    insertWishlistItem,
     updateWishlistItem,
     deleteWishlistItem,
     updateWishlistParticpant,

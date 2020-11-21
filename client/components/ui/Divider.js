@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { DARK_COLOR } from '../utils/theme';
 
 const Divider = styled.hr`
   width: 100%;
-  border-color: ${DARK_COLOR};
-  color: ${DARK_COLOR};
-  background-color: ${DARK_COLOR};
-  opacity: 0.05;
+  border-color: #cbd6de;
+  color: #cbd6de;
+  background-color: #cbd6de;
+  opacity: 0.3;
+  margin: 0;
 `;
 
 export default Divider;
