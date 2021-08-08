@@ -62,7 +62,7 @@ const WishlistPage = () => {
             <WishlistManageSidebar wishlist={wishlist} />
           </Flex>
         )}
-        <Flex width={canManage ? '75%' : '100%'}>
+        <Flex width={canManage ? '75%' : '100%'} justifyContent="center">
           <WishlistItemsView
             wishlistName={wishlist.name}
             wishlistId={wishlist.id}

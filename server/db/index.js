@@ -25,6 +25,11 @@ const initializeDatabase = () => {
 
   database = knex(dbConfig);
 
+  database.on('query-error', (error, query = {}) => {
+    log.error({ message: 'Database Error', error, query });
+    throw error;
+  });
+
   log.info('Database connection successful.');
 
   return database;

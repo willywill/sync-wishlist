@@ -29,7 +29,7 @@ const Wishlist = gql`
     "Price estimation of the item"
     price: String
     "List of participants for this wishlist item"
-    participants: [WishlistParticipant!]!
+    participants: [WishlistParticipant!]
   }
 
   type WishlistParticipant {
@@ -82,7 +82,7 @@ const Wishlist = gql`
     wishlistItemId: String!
   }
 
-  input PaticpateInWishlistItemInput {
+  input ParticipateInWishlistItemInput {
     "ID of the the wishlist"
     wishlistId: String!
     "ID of the item in the wishlist"
@@ -104,7 +104,7 @@ const Wishlist = gql`
     "Remove a specific wishlist item"
     removeWishlistItem(input: RemoveWishlistItemInput): WishlistPayload!
     "Claiming some level of responsibility for making this wishlist item a reality"
-    particpateInWishlistItem(input: PaticpateInWishlistItemInput!): WishlistPayload!
+    participateInWishlistItem(input: ParticipateInWishlistItemInput!): WishlistPayload!
     "Edit a specific wishlist item"
     editWishlistItem(input: EditWishlistItemInput!): WishlistPayload!
   }
@@ -114,16 +114,15 @@ export const resolver = {
   Wishlist: {
     id: wishlist => wishlist.id,
     name: wishlist => wishlist.name,
-    items: wishlist => wishlist.items,
-    canManage: wishlist => wishlist.canManage || false,
+    items: (wishlist, args, ctx) => WishlistService(ctx).getWishlistItems(wishlist.id),
+    canManage: wishlist => !!wishlist.canManage,
   },
   Query: {
     wishlist: (parent, args, ctx) => WishlistService(ctx).getWishlist(args.id)
       .then(wishlist => ({
         id: wishlist.id,
         name: wishlist.name,
-        items: wishlist.items,
-        canManage: isEqual(args.privateKey, wishlist.manageKey),
+        canManage: isEqual(String(args.privateKey), String(wishlist.manageKey)),
       })),
   },
   Mutation: {
@@ -135,7 +134,7 @@ export const resolver = {
       .then(wishlist => ({ wishlist })),
     editWishlistItem: (parent, args, ctx) => WishlistService(ctx).editWishlistItem(args.input)
       .then(wishlist => ({ wishlist })),
-    particpateInWishlistItem: (parent, args, ctx) => WishlistService(ctx).participateInWishlistItem(args.input)
+    participateInWishlistItem: (parent, args, ctx) => WishlistService(ctx).participateInWishlistItem(args.input)
       .then(wishlist => ({ wishlist })),
   },
 };
