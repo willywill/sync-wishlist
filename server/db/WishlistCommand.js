@@ -1,49 +1,63 @@
-import { Types } from 'mongoose';
-import Wishlist from './models/wishlist';
+import omit from 'lodash/fp/omit';
+import isUndefined from 'lodash/fp/isUndefined';
+import first from 'lodash/fp/first';
+import database from '.';
 
-const { ObjectId } = Types;
+const omitUndefined = omit(isUndefined);
+const pullReturnValueFromInsert = (result) => first(result);
 
 const WishlistCommand = (
   ctx,
-  db = Wishlist,
+  db = database,
 ) => {
-  const findWishlist = (id) => db.findOne({ _id: ObjectId(id) }).exec();
+  const findWishlist = (id) => db()
+    .select()
+    .from('wishlist')
+    .where('id', id);
 
-  const insertWishlist = (name, email, manageKey) => db.create({
-    name,
-    email,
-    manageKey,
-  });
+  const insertWishlist = (name, email, manageKey) => db()
+    .insert({
+      name,
+      email,
+      manageKey,
+    })
+    .into('wishlist')
+    .returning('id')
+    .then(pullReturnValueFromInsert);
 
-  const insertWishlistItem = (id, item) => db.updateOne(
-    { _id: id },
-    { $addToSet: { items: item } },
-  );
+  const insertWishlistItem = (id, item) => db()
+    .insert({
+      wishlist_id: id,
+      name: item.name,
+      description: item.description,
+      url: item.url,
+      photoUrl: item.photoUrl,
+      price: item.price,
+    })
+    .into('wishlist_item');
 
-  const updateWishlistItem = (id, item) => db.updateOne(
-    { _id: id, 'items._id': item.wishlistItemId },
-    { $set: {
-      'items.$.name': item.name,
-      'items.$.url': item.url,
-      'items.$.price': item.price,
-      'items.$.photoUrl': item.photoUrl,
-      'items.$.description': item.description,
-    } },
-  );
+  const updateWishlistItem = (id, item) => db()
+    .update(omitUndefined({
+      name: item.name,
+      description: item.description,
+      url: item.url,
+      photoUrl: item.photoUrl,
+      price: item.price,
+    }))
+    .from('wishlist_item')
+    .where('id', id);
 
-  const updateWishlistParticpant = (id, itemId, participantName) => db.updateOne(
-    { _id: id, 'items._id': itemId },
-    { $push: { 'items.$.participants': { name: participantName } } },
-  );
+  const updateWishlistParticipant = (id, itemId, participantName) => db()
+    .update(omitUndefined({
+      name: participantName,
+    }))
+    .from('wishlist_participant')
+    .where('wishlist_item_id', itemId);
 
-  const deleteWishlistItem = (id, itemId) =>
-    db.updateOne({ _id: id }, { $pull: { items: { _id: ObjectId(itemId) } } });
-
-  // TODO: Do we need this?
-  const deleteWishlistParticpant = (id, itemId, participantId) => db.updateOne(
-    { id },
-    { $pull: { 'wishlist.items.participants': { _id: participantId } } },
-  );
+  const deleteWishlistItem = (id, itemId) => db()
+    .del()
+    .from('wishlist_item')
+    .where('id', itemId);
 
   return {
     findWishlist,
@@ -51,8 +65,7 @@ const WishlistCommand = (
     insertWishlistItem,
     updateWishlistItem,
     deleteWishlistItem,
-    updateWishlistParticpant,
-    deleteWishlistParticpant,
+    updateWishlistParticipant,
   };
 };
 

@@ -1,5 +1,6 @@
 import omit from 'lodash/fp/omit';
 import isUndefined from 'lodash/fp/isUndefined';
+import first from 'lodash/fp/first';
 import { nanoid } from 'nanoid';
 import config from '../config';
 import WishlistCommand from '../db/WishlistCommand';
@@ -17,7 +18,7 @@ const WishlistService = (
   const getWishlist = (wishlistId) => {
     if (!wishlistId) return null;
 
-    return wishlistCommand.findWishlist(wishlistId);
+    return wishlistCommand.findWishlist(wishlistId).then(first);
   };
 
   const createWishlist = async ({ name, email }) => {
@@ -29,13 +30,13 @@ const WishlistService = (
       // Create a url-safe key for managing this wishlist
       const privateKey = nanoid(12);
       // Create an instance of this wishlist in the DB
-      const wishlist = await wishlistCommand.insertWishlist(name, email, privateKey);
+      const wishlistId = await wishlistCommand.insertWishlist(name, email, privateKey);
       // Build the full url
-      const url = buildManageWishlistUrl(wishlist.id, privateKey);
+      const url = buildManageWishlistUrl(wishlistId, privateKey);
       // Email the user creating the wishlist a link to access the wishlist admin screen
       await emailService.sendWishlistManageEmail(email, url);
 
-      return wishlist;
+      return getWishlist(wishlistId);
     }
     catch (error) {
       ctx.log('error', { message: 'Unable to create wishlist', error: error.message });
@@ -46,9 +47,9 @@ const WishlistService = (
   const addWishlistItem = async (wishlistItem) => {
     const { wishlistId, ...wishlistItemFields } = wishlistItem;
 
-    const itemFiedlsWithValues = omitUndefined(wishlistItemFields);
+    const itemFieldsWithValues = omitUndefined(wishlistItemFields);
 
-    await wishlistCommand.insertWishlistItem(wishlistId, itemFiedlsWithValues);
+    await wishlistCommand.insertWishlistItem(wishlistId, itemFieldsWithValues);
     const wishlist = await getWishlist(wishlistId);
 
     return wishlist;
@@ -57,9 +58,9 @@ const WishlistService = (
   const editWishlistItem = async (wishlistItem) => {
     const { wishlistId, ...wishlistItemFields } = wishlistItem;
 
-    const itemFiedlsWithValues = omitUndefined(wishlistItemFields);
+    const itemFieldsWithValues = omitUndefined(wishlistItemFields);
 
-    await wishlistCommand.updateWishlistItem(wishlistId, itemFiedlsWithValues);
+    await wishlistCommand.updateWishlistItem(wishlistId, itemFieldsWithValues);
     const wishlist = await getWishlist(wishlistId);
 
     return wishlist;
@@ -73,7 +74,7 @@ const WishlistService = (
   };
 
   const participateInWishlistItem = async ({ wishlistId, wishlistItemId, name }) => {
-    await wishlistCommand.updateWishlistParticpant(wishlistId, wishlistItemId, name);
+    await wishlistCommand.updateWishlistParticipant(wishlistId, wishlistItemId, name);
 
     const wishlist = await getWishlist(wishlistId);
     return wishlist;
