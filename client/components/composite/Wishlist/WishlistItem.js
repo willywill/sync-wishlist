@@ -37,7 +37,7 @@ const removeWishlistItemMutation = gql`
 
 const addWishlistParticipantMutation = gql`
   mutation addWishlistParticipant($input: PaticpateInWishlistItemInput!) {
-    particpateInWishlistItem(input: $input) {
+    participateInWishlistItem(input: $input) {
       wishlist {
         id
         items {

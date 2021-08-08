@@ -6,6 +6,8 @@ import database from '.';
 const omitUndefined = omit(isUndefined);
 const pullReturnValueFromInsert = (result) => first(result);
 
+// TODO: Pass through ctx
+// Use consistent DB column names, some are snake case, some are camel case
 const WishlistCommand = (
   ctx,
   db = database,
@@ -14,6 +16,11 @@ const WishlistCommand = (
     .select()
     .from('wishlist')
     .where('id', id);
+
+  const findWishlistItems = (id) => db()
+    .select()
+    .from('wishlist_item')
+    .where('wishlist_id', id);
 
   const insertWishlist = (name, email, manageKey) => db()
     .insert({
@@ -45,7 +52,7 @@ const WishlistCommand = (
       price: item.price,
     }))
     .from('wishlist_item')
-    .where('id', id);
+    .where('id', item.wishlistItemId);
 
   const updateWishlistParticipant = (id, itemId, participantName) => db()
     .update(omitUndefined({
@@ -61,6 +68,7 @@ const WishlistCommand = (
 
   return {
     findWishlist,
+    findWishlistItems,
     insertWishlist,
     insertWishlistItem,
     updateWishlistItem,

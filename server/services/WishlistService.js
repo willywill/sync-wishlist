@@ -15,10 +15,22 @@ const WishlistService = (
   wishlistCommand = WishlistCommand(ctx),
   emailService = EmailService(ctx),
 ) => {
-  const getWishlist = (wishlistId) => {
+  const getWishlist = async (wishlistId) => {
     if (!wishlistId) return null;
 
-    return wishlistCommand.findWishlist(wishlistId).then(first);
+    const wishlist = await wishlistCommand
+      .findWishlist(wishlistId)
+      .then(first);
+
+    return wishlist;
+  };
+
+  const getWishlistItems = async (wishlistId) => {
+    if (!wishlistId) return null;
+
+    const wishlistItems = await wishlistCommand.findWishlistItems(wishlistId);
+
+    return wishlistItems;
   };
 
   const createWishlist = async ({ name, email }) => {
@@ -82,6 +94,7 @@ const WishlistService = (
 
   return {
     getWishlist,
+    getWishlistItems,
     createWishlist,
     addWishlistItem,
     editWishlistItem,
