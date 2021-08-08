@@ -1,9 +1,33 @@
-import mongoose from 'mongoose';
+import knex from 'knex';
 import log from 'winston';
-import config from '../config';
+import path from 'path';
 
-const initializeDatabase = () => mongoose.connect(config.db.connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => log.info({ message: 'Database connection successful.' }))
-  .catch((error) => log.error({ message: 'Database connection failed.', error: error.messsage }));
+const dbConfig = {
+  client: 'sqlite3',
+  connection: {
+    filename: path.resolve(__dirname, './data/wishlist.db'),
+  },
+  useNullAsDefault: true,
+  migrations: {
+    directory: './data/migrations',
+  },
+  seeds: {
+    directory: './data/seeds',
+  },
+};
+
+let database = null;
+
+const initializeDatabase = () => {
+  if (database) {
+    return database;
+  }
+
+  database = knex(dbConfig);
+
+  log.info('Database connection successful.');
+
+  return database;
+};
 
 export default initializeDatabase;

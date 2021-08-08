@@ -37,7 +37,7 @@ const NavbarContainer = styled(Flex)`
 const Navbar = () => (
   <NavbarContainer>
     <Flex alignItems="center" onClick={() => Router.push('/')}>
-      <Flex justifyContent="flex-start" ml={3} mr={2} pt={2} width="60px">
+      <Flex justifyContent="flex-start" ml={3} mr={2} pt={2} width="40px">
         <Logo />
       </Flex>
       <Box mt={2}>
